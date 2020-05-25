@@ -2,9 +2,10 @@
 #'
 #' \code{plot} method for class '\code{bibliometrix}'
 #' @param x is the object for which plots are desired.
-#' @param ... can accept two arguments:\cr 
+#' @param ... can accept three arguments:\cr 
 #' \code{k} is an integer, used for plot formatting (number of objects). Default value is 10.\cr
-#' \code{pause} is a logical, used to allow pause in screen scrolling of results. Default value is \code{pause = FALSE}.
+#' \code{pause} is a logical, used to allow pause in screen scrolling of results. Default value is \code{pause = FALSE}.\cr
+#' \code{graph} is a logical, used to toggle if graphs should be printed. Default value is \code{graph = TRUE}.
 #' @return The function \code{plot} returns a list of plots of class \code{ggplot2}. 
 #' 
 #'
@@ -29,6 +30,7 @@ plot.bibliometrix<-function(x, ...){
   
   arguments <- list(...)
   if (sum(names(arguments)=="k")==0){k=10} else {k=arguments$k}
+  if (sum(names(arguments)=='graph')==0){graph=TRUE} else {graph=arguments$graph}
   if (sum(names(arguments)=="pause")==0){pause=FALSE} else {pause=arguments$pause}
   
   if (pause == TRUE){
@@ -43,8 +45,9 @@ plot.bibliometrix<-function(x, ...){
     labs(title="Most productive Authors", x = "Authors")+
     labs(y = "N. of Documents")+
     theme_minimal() +
+    coord_cartesian(clip = "off") +
     coord_flip()
-  plot(g)
+  # plot(g)
   
   graphs$MostProdAuthors=g
   
@@ -61,9 +64,9 @@ plot.bibliometrix<-function(x, ...){
   names(xx2)=c("Country","Freq","Collaboration")
   xx=rbind(xx2,xx1)
   xx$Country=factor(xx$Country,levels=xx$Country[1:dim(xx2)[1]])
-  g=suppressWarnings(ggplot(data=xx, aes(x=xx$Country, y=xx$Freq,fill=xx$Collaboration)) +
+  g=ggplot(data=xx, aes(x=Country, y=Freq, fill=Collaboration) +
     geom_bar(stat="identity")+
-    scale_x_discrete(limits = rev(levels(xx$Country)))+
+    scale_x_discrete(limits = rev(levels(Country)))+
     scale_fill_discrete(name="Collaboration",
                         breaks=c("SCP","MCP"))+
     labs(title = "Most Productive Countries", x = "Countries", y = "N. of Documents", 
@@ -71,8 +74,9 @@ plot.bibliometrix<-function(x, ...){
     theme_minimal() +
     theme(plot.caption = element_text(size = 9, hjust = 0.5,
           color = "blue", face = "italic"))+
+    coord_cartesian(clip = "off") +
     coord_flip())
-  plot(g)
+  # plot(g)
   graphs$MostProdCountries=g
   } else {graphs$MostProdCountries=NA}
   
@@ -96,23 +100,23 @@ plot.bibliometrix<-function(x, ...){
   
   names(Y)=c("Year","Freq")
   
-  g=ggplot(Y, aes(x = Y$Year, y = Y$Freq)) +
+  g=ggplot(Y, aes(x = Year, y = Freq)) +
     geom_line() +
     geom_area(fill = '#002F80', alpha = .5) +
     labs(x = 'Year'
          , y = 'Articles'
          , title = "Annual Scientific Production") +
-    scale_x_continuous(breaks= (Y$Year[seq(1,length(Y$Year),by=2)])) +
+    scale_x_continuous(breaks= (Year[seq(1,length(Year),by=2)])) +
     theme(text = element_text(color = "#444444")
           ,panel.background = element_rect(fill = '#EFEFEF')
           ,panel.grid.minor = element_line(color = '#FFFFFF')
           ,panel.grid.major = element_line(color = '#FFFFFF')
-          ,plot.title = element_text(size = 24)
-          ,axis.title = element_text(size = 14, color = '#555555')
-          ,axis.title.y = element_text(vjust = 1, angle = 0)
+          # ,plot.title = element_text(size = 24)
+          ,axis.title = element_text(color = '#555555')
+          # ,axis.title.y = element_text(vjust = 1, angle = 0)
           ,axis.title.x = element_text(hjust = 0)
     )   
-  plot(g)
+  # plot(g)
   graphs$AnnualScientProd=g
   
   
@@ -144,50 +148,53 @@ plot.bibliometrix<-function(x, ...){
   row.names(Table2)=Table2$Year}
   
   
-  g=ggplot(Table2, aes(x = Table2$Year, y = Table2$MeanTCperYear)) +
+  g=ggplot(Table2, aes(x = Year, y = MeanTCperYear)) +
     geom_line() +
     geom_area(fill = '#002F80', alpha = .5) +
     labs(x = 'Year'
          , y = 'Citations'
          , title = "Average Article Citations per Year")+
-    scale_x_continuous(breaks= (Table2$Year[seq(1,length(Table2$Year),by=2)])) +
+    scale_x_continuous(breaks= (Year[seq(1,length(Year),by=2)])) +
     theme(text = element_text(color = "#444444")
           ,panel.background = element_rect(fill = '#EFEFEF')
           ,panel.grid.minor = element_line(color = '#FFFFFF')
           ,panel.grid.major = element_line(color = '#FFFFFF')
-          ,plot.title = element_text(size = 24)
-          ,axis.title = element_text(size = 14, color = '#555555')
-          ,axis.title.y = element_text(vjust = 1, angle = 0)
+          # ,plot.title = element_text(size = 24)
+          ,axis.title = element_text(color = '#555555')
+          # ,axis.title.y = element_text(vjust = 1, angle = 0)
           ,axis.title.x = element_text(hjust = 0)
     )   
-  plot(g)
+  # plot(g)
   graphs$AverArtCitperYear=g
   
   if (pause == TRUE){
     cat("Hit <Return> to see next plot: ")
     line <- readline()}
   
-  g=ggplot(Table2, aes(x = Table2$Year, y = Table2$MeanTCperArt)) +
+  g=ggplot(Table2, aes(x = Year, y = MeanTCperArt)) +
     geom_line() +
     geom_area(fill = '#002F80', alpha = .5) +
     labs(x = 'Year'
          , y = 'Citations'
          , title = "Average Total Citations per Year")+
-    scale_x_continuous(breaks= (Table2$Year[seq(1,length(Table2$Year),by=2)])) +
+    scale_x_continuous(breaks= (Year[seq(1,length(Year),by=2)])) +
     theme(text = element_text(color = "#444444")
           ,panel.background = element_rect(fill = '#EFEFEF')
           ,panel.grid.minor = element_line(color = '#FFFFFF')
           ,panel.grid.major = element_line(color = '#FFFFFF')
-          ,plot.title = element_text(size = 24)
-          ,axis.title = element_text(size = 14, color = '#555555')
-          ,axis.title.y = element_text(vjust = 1, angle = 0)
+          # ,plot.title = element_text(size = 24)
+          ,axis.title = element_text(color = '#555555')
+          # ,axis.title.y = element_text(vjust = 1, angle = 0)
           ,axis.title.x = element_text(hjust = 0, angle = 0)
     )   
-  plot(g)
+  # plot(g)
   graphs$AverTotCitperYear=g
   } else {
     graphs$AverArtCitperYear=NA
     graphs$AverTotCitperYear=NA
+  }
+  if (graph == TRUE) {
+    print(graphs)
   }
   invisible(graphs)
   
