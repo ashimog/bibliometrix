@@ -11,8 +11,8 @@
 
 \item{...}{can accept three arguments:\cr 
 \code{k} is an integer, used for plot formatting (number of objects). Default value is 10.\cr
-\code{pause} is a logical, used to allow pause in screen scrolling of results. Default value is \code{pause = FALSE}.\cr
-\code{graph} is a logical, used to toggle if graphs should be printed. Default value is \code{graph = TRUE}.}
+\code{graph} is a logical, used to determine whether graphs should be plotted to devices. Default value is \code{graph = TRUE}.\cr
+\code{pause} is a logical, used to allow pause in screen scrolling of results. Default value is \code{pause = FALSE}. Only works if \code{graph = TRUE}.}
 }
 \value{
 The function \code{plot} returns a list of plots of class \code{ggplot2}.
